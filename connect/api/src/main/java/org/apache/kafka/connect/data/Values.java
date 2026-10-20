@@ -221,7 +221,11 @@ public class Values {
             return null;
         }
         StringBuilder sb = new StringBuilder();
-        append(sb, value, false);
+        if (value instanceof java.util.Date dateValue) {
+            sb.append(dateFormatFor(schema, dateValue).format(dateValue));
+        } else {
+            append(sb, value, false);
+        }
         return sb.toString();
     }
 
@@ -776,6 +780,24 @@ public class Values {
             return new SimpleDateFormat(ISO_8601_DATE_FORMAT_PATTERN);
         }
         return new SimpleDateFormat(ISO_8601_TIMESTAMP_FORMAT_PATTERN);
+    }
+
+    private static DateFormat dateFormatFor(Schema schema, java.util.Date value) {
+        DateFormat format = null;
+        if (schema != null) {
+            if (Timestamp.LOGICAL_NAME.equals(schema.name())) {
+                format = new SimpleDateFormat(ISO_8601_TIMESTAMP_FORMAT_PATTERN);
+            } else if (Date.LOGICAL_NAME.equals(schema.name())) {
+                format = new SimpleDateFormat(ISO_8601_DATE_FORMAT_PATTERN);
+            } else if (Time.LOGICAL_NAME.equals(schema.name())) {
+                format = new SimpleDateFormat(ISO_8601_TIME_FORMAT_PATTERN);
+            }
+        }
+        if (format == null) {
+            return dateFormatFor(value);
+        }
+        format.setTimeZone(UTC);
+        return format;
     }
 
     private static class ValueParser {

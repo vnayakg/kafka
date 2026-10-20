@@ -615,6 +615,13 @@ public class ValuesTest {
     }
 
     @Test
+    public void shouldSerializeMidnightTimestampWithTimeComponent() {
+        java.util.Date midnight = java.util.Date.from(Instant.parse("2025-01-01T00:00:00.000Z"));
+
+        assertEquals("2025-01-01T00:00:00.000Z", Values.convertToString(Timestamp.SCHEMA, midnight));
+    }
+
+    @Test
     public void shouldParseTimestampStringWithEscapedColonsAsTimestamp() throws Exception {
         String str = "2019-08-23T14\\:34\\:54.346Z";
         SchemaAndValue result = Values.parseString(str);
